@@ -1,0 +1,16 @@
+'''Create a NumPy array containing the internal marks of 10 students. Calculate and print the mean, median, standard deviation, maximum, and minimum values.'''
+
+
+
+
+import numpy as np
+
+# NumPy array containing internal marks of 10 students
+marks = np.array([72, 85, 91, 68, 77, 88, 95, 74, 82, 65])
+
+print("Marks:", marks)
+print("Mean:", np.mean(marks))
+print("Median:", np.median(marks))
+print("Standard Deviation:", np.std(marks))
+print("Maximum:", np.max(marks))
+print("Minimum:", np.min(marks))

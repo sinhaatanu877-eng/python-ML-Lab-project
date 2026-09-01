@@ -1,0 +1,27 @@
+'''Construct a DataFrame containing the following columns: Student_Name, Roll_Number, Marks, and Attendance. Filter and display only the records of students who have scored above 80 marks'''
+
+
+
+
+import pandas as pd
+
+# Create DataFrame
+data = {
+    "Student_Name": ["Amit", "Riya", "Sourav", "Neha", "Rahul"],
+    "Roll_Number": [101, 102, 103, 104, 105],
+    "Marks": [72, 85, 91, 68, 77],
+    "Attendance": [88, 92, 76, 95, 81]
+}
+
+df = pd.DataFrame(data)
+
+# Display the complete DataFrame
+print("Complete DataFrame:")
+print(df)
+
+# Filter students who scored above 80
+result = df[df["Marks"] > 80]
+
+# Display the filtered records
+print("\nStudents who scored above 80:")
+print(result)
