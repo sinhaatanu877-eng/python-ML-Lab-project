@@ -1,0 +1,112 @@
+# question : -- 1. Load and perform a complete EDA on the Wine dataset The Wine dataset is available directly in Scikit-learn.
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.datasets import load_wine
+
+# Load Wine dataset
+wine = load_wine()
+
+# Create DataFrame
+df = pd.DataFrame(wine.data, columns=wine.feature_names)
+
+# Add target column
+df["target"] = wine.target
+
+# Add target class names
+df["target_name"] = df["target"].map(
+    dict(enumerate(wine.target_names))
+)
+
+
+
+print("First 5 rows:")
+print(df.head())
+
+print("\nLast 5 rows:")
+print(df.tail())
+
+print("\nShape of dataset:")
+print(df.shape)
+
+print("\nColumn names:")
+print(df.columns.tolist())
+
+print("\nDataset information:")
+print(df.info())
+
+
+print("\nStatistical Summary:")
+print(df.describe())
+
+
+
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+print("\nTotal Missing Values:")
+print(df.isnull().sum().sum())
+
+
+
+print("\nNumber of duplicate rows:")
+print(df.duplicated().sum())
+
+
+
+print("\nData Types:")
+print(df.dtypes)
+
+
+
+print("\nTarget Class Distribution:")
+print(df["target_name"].value_counts())
+
+
+
+print("\nNumber of unique values:")
+print(df.nunique())
+
+
+
+numerical_columns = wine.feature_names
+
+print("\nMean:")
+print(df[numerical_columns].mean())
+
+print("\nMedian:")
+print(df[numerical_columns].median())
+
+print("\nStandard Deviation:")
+print(df[numerical_columns].std())
+
+
+df[numerical_columns].hist(
+    figsize=(15, 12),
+    bins=20,
+    edgecolor="black"
+)
+
+plt.suptitle("Distribution of Wine Features", fontsize=16)
+plt.tight_layout()
+plt.show()
+
+
+
+plt.figure(figsize=(7, 5))
+
+sns.countplot(
+    data=df,
+    x="target_name",
+    hue="target_name",
+    palette="viridis",
+    legend=False
+)
+
+plt.title("Distribution of Wine Classes")
+plt.xlabel("Wine Class")
+plt.ylabel("Count")
+plt.show()
