@@ -1,0 +1,84 @@
+#  The task is to modify the preprocessing pipeline to use MinMaxScaler instead of StandardScaler.
+
+import pandas as pd
+import numpy as np
+
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
+
+data = {
+    "Age": [22, 25, 28, 35, 40, 45, 50, 29, 31, 38],
+    "Salary": [25000, 30000, 35000, 50000, 60000,
+               75000, 90000, 40000, 45000, 55000],
+    "Department": [
+        "IT", "HR", "Finance", "IT", "Marketing",
+        "Finance", "IT", "HR", "Marketing", "Finance"
+    ],
+    "Years of Experience": [1, 2, 4, 8, 12, 15, 20, 5, 7, 10]
+}
+
+df = pd.DataFrame(data)
+df.loc[2, "Age"] = np.nan
+df.loc[5, "Salary"] = np.nan
+df.loc[7, "Department"] = np.nan
+df.loc[8, "Years of Experience"] = np.nan
+print("========== ORIGINAL DATASET ==========")
+print(df)
+
+print("\n========== MISSING VALUES ==========")
+print(df.isnull().sum())
+numerical_features = [
+    "Age",
+    "Salary",
+    "Years of Experience"
+]
+
+categorical_features = [
+    "Department"
+]
+numerical_pipeline = Pipeline([
+    # Fill missing numerical values with mean
+    ("imputer", SimpleImputer(strategy="mean")),
+
+    # Scale numerical values between 0 and 1
+    ("scaler", MinMaxScaler())
+])
+categorical_pipeline = Pipeline([
+    # Fill missing categorical values with most frequent value
+    ("imputer", SimpleImputer(strategy="most_frequent")),
+
+    # Convert categorical values into numerical values
+    ("onehot", OneHotEncoder(handle_unknown="ignore"))
+])
+preprocessor = ColumnTransformer([
+    ("numerical", numerical_pipeline, numerical_features),
+    ("categorical", categorical_pipeline, categorical_features)
+])
+X_processed = preprocessor.fit_transform(df)
+X_processed = X_processed.toarray()
+print("\n========== PROCESSED DATA ==========")
+print(np.round(X_processed, 3))
+feature_names = preprocessor.get_feature_names_out()
+
+print("\n========== FEATURE NAMES ==========")
+print(feature_names)
+processed_df = pd.DataFrame(
+    X_processed,
+    columns=feature_names
+)
+
+print("\n========== FINAL PROCESSED DATAFRAME ==========")
+print(processed_df.round(3))
+print("\n========== NUMERICAL FEATURE RANGES ==========")
+
+numerical_data = processed_df[
+    [f"numerical__{feature}" for feature in numerical_features]
+]
+
+print("\nMinimum values:")
+print(numerical_data.min())
+
+print("\nMaximum values:")
+print(numerical_data.max())
