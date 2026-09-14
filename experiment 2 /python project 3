@@ -1,0 +1,103 @@
+#Generate a correlation heatmap (using Seaborn’s heatmap) and identify the pair of features that exhibit the strongest positive correlation.
+
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import load_wine
+wine = load_wine()
+df = pd.DataFrame(
+    wine.data,
+    columns=wine.feature_names
+)
+print("First 5 rows of the Wine dataset:")
+print(df.head())
+print("\nDataset Shape:")
+print(df.shape)
+
+print("\nFeature Names:")
+print(df.columns.tolist())
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+correlation_matrix = df.corr()
+print("\n" + "=" * 70)
+print("CORRELATION MATRIX")
+print("=" * 70)
+
+print(correlation_matrix)
+
+plt.figure(figsize=(14, 10))
+
+sns.heatmap(
+    correlation_matrix,
+    annot=True,              # Display correlation values
+    fmt=".2f",               # Display values up to 2 decimal places
+    cmap="coolwarm",         # Color scheme
+    linewidths=0.5,          # Space between cells
+    square=True
+)
+
+plt.title(
+    "Correlation Heatmap of Wine Dataset Features",
+    fontsize=16
+)
+
+plt.xticks(rotation=45, ha="right")
+plt.yticks(rotation=0)
+
+plt.tight_layout()
+
+plt.show()
+
+correlation_without_diagonal = correlation_matrix.copy()
+
+np.fill_diagonal(
+    correlation_without_diagonal.values,
+    np.nan
+)
+
+strongest_pair = (
+    correlation_without_diagonal
+    .stack()
+    .idxmax()
+)
+
+strongest_correlation = (
+    correlation_without_diagonal
+    .stack()
+    .max()
+)
+
+print("\n" + "=" * 70)
+print("STRONGEST POSITIVE CORRELATION")
+print("=" * 70)
+
+print("Feature 1:", strongest_pair[0])
+print("Feature 2:", strongest_pair[1])
+print(
+    "Correlation Coefficient:",
+    round(strongest_correlation, 4)
+)
+correlation_pairs = (
+    correlation_without_diagonal
+    .unstack()
+    .sort_values(ascending=False)
+)
+
+
+unique_pairs = []
+
+for (feature1, feature2), value in correlation_pairs.items():
+
+    pair = tuple(sorted([feature1, feature2]))
+
+    if pair not in unique_pairs:
+        unique_pairs.append(pair)
+
+        if len(unique_pairs) <= 10:
+            print(
+                f"{feature1} <--> {feature2}: {value:.4f}"
+            )
