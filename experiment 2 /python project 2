@@ -1,0 +1,158 @@
+#2. Plot Boxplots for all numerical attributes in the Wine dataset to visually identify any potential outliers.
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Import Wine dataset from Scikit-learn
+from sklearn.datasets import load_wine
+
+wine = load_wine()
+
+
+df = pd.DataFrame(
+    wine.data,
+    columns=wine.feature_names
+)
+
+
+# Display the first 5 rows
+print("First 5 rows of the Wine dataset:")
+print(df.head())
+
+print("\nDataset Shape:")
+print(df.shape)
+
+print("\nColumn Names:")
+print(df.columns.tolist())
+
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+print("\nStatistical Summary:")
+print(df.describe())
+plt.figure(figsize=(14, 10))
+
+sns.boxplot(
+    data=df,
+    orient="h"
+)
+
+plt.title(
+    "Boxplots of All Numerical Attributes in Wine Dataset",
+    fontsize=16
+)
+
+plt.xlabel("Feature Value")
+plt.ylabel("Features")
+
+plt.tight_layout()
+
+plt.show()
+print("\n" + "=" * 70)
+print("OUTLIER DETECTION USING IQR METHOD")
+print("=" * 70)
+
+for column in df.columns:
+
+    # Calculate Q1 and Q3
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+
+    # Calculate IQR
+    IQR = Q3 - Q1
+
+    # Calculate lower and upper limits
+    lower_limit = Q1 - 1.5 * IQR
+    upper_limit = Q3 + 1.5 * IQR
+
+    # Find outliers
+    outliers = df[
+        (df[column] < lower_limit) |
+        (df[column] > upper_limit)
+    ]
+
+    # Display results
+    print("\nFeature:", column)
+    print("Q1:", Q1)
+    print("Q3:", Q3)
+    print("IQR:", IQR)
+    print("Lower Limit:", lower_limit)
+    print("Upper Limit:", upper_limit)
+    print("Number of Outliers:", len(outliers))
+
+    if len(outliers) > 0:
+        print("Outlier Values:")
+        print(outliers[column].values)
+    else:
+        print("No potential outliers found.")
+
+outlier_summary = []
+
+for column in df.columns:
+
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+
+    IQR = Q3 - Q1
+
+    lower_limit = Q1 - 1.5 * IQR
+    upper_limit = Q3 + 1.5 * IQR
+
+    outliers = df[
+        (df[column] < lower_limit) |
+        (df[column] > upper_limit)
+    ]
+
+    outlier_summary.append({
+        "Feature": column,
+        "Q1": Q1,
+        "Q3": Q3,
+        "IQR": IQR,
+        "Lower Limit": lower_limit,
+        "Upper Limit": upper_limit,
+        "Number of Outliers": len(outliers)
+    })
+
+
+# Convert results into DataFrame
+outlier_df = pd.DataFrame(outlier_summary)
+
+print("\n" + "=" * 70)
+print("OUTLIER SUMMARY")
+print("=" * 70)
+
+print(outlier_df.to_string(index=False))
+
+features_with_outliers = outlier_df[
+    outlier_df["Number of Outliers"] > 0
+]["Feature"].tolist()
+
+
+print("\nFeatures with potential outliers:")
+print(features_with_outliers)
+
+
+if len(features_with_outliers) > 0:
+
+    plt.figure(figsize=(14, 8))
+
+    sns.boxplot(
+        data=df[features_with_outliers],
+        orient="h"
+    )
+
+    plt.title(
+        "Boxplots of Features with Potential Outliers",
+        fontsize=16
+    )
+
+    plt.xlabel("Feature Value")
+    plt.ylabel("Features")
+
+    plt.tight_layout()
+
+    plt.show()
+
