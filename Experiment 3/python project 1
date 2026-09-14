@@ -1,0 +1,56 @@
+#  1. Create and preprocess a synthetic dataset with missing values
+
+import pandas as pd
+import numpy as np
+
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, MinMaxScaler
+data = {
+    "Age": [22, 25, 28, 35, 40, 45, 50, 29, 31, 38],
+    "Salary": [25000, 30000, 35000, 50000, 60000, 75000, 90000, 40000, 45000, 55000],
+    "Department": [
+        "IT", "HR", "Finance", "IT", "Marketing",
+        "Finance", "IT", "HR", "Marketing", "Finance"
+    ],
+    "Years of Experience": [1, 2, 4, 8, 12, 15, 20, 5, 7, 10]
+}
+
+df = pd.DataFrame(data)
+df.loc[2, "Age"] = np.nan
+df.loc[5, "Salary"] = np.nan
+df.loc[7, "Department"] = np.nan
+df.loc[8, "Years of Experience"] = np.nan
+
+print("Original Dataset with Missing Values:")
+print(df)
+print("\nMissing Values:")
+print(df.isnull().sum())
+numerical_features = [
+    "Age",
+    "Salary",
+    "Years of Experience"
+]
+
+categorical_features = [
+    "Department"
+]
+numerical_pipeline = Pipeline([
+    ("imputer", SimpleImputer(strategy="mean")),
+    ("scaler", StandardScaler())
+])
+
+categorical_pipeline = Pipeline([
+    ("imputer", SimpleImputer(strategy="most_frequent")),
+    ("onehot", OneHotEncoder(handle_unknown="ignore"))
+])
+
+preprocessor = ColumnTransformer([
+    ("num", numerical_pipeline, numerical_features),
+    ("cat", categorical_pipeline, categorical_features)
+])
+X_processed = preprocessor.fit_transform(df)
+
+print("\nProcessed Dataset:")
+print(X_processed.toarray() if hasattr(X_processed, "toarray") else X_processed)
