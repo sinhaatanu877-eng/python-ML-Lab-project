@@ -1,0 +1,75 @@
+#  Plot the Receiver Operating Characteristic (ROC) curve and calculate the Area Under the Curve (AUC) score.
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_curve, roc_auc_score
+
+data = {
+    "StudyHours": [1, 2, 2, 3, 3, 4, 4, 5, 5, 6,
+                   6, 7, 7, 8, 8, 9, 9, 10, 10, 11],
+    
+    "Attendance": [50, 55, 60, 58, 65, 62, 68, 70, 72, 75,
+                   78, 80, 82, 85, 88, 90, 92, 94, 96, 98],
+    
+    "Pass": [0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+             1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+}
+
+df = pd.DataFrame(data)
+
+
+X = df[["StudyHours", "Attendance"]]
+
+y = df["Pass"]
+
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42, stratify=y
+)
+
+
+model = LogisticRegression()
+
+
+model.fit(X_train, y_train)
+
+y_probability = model.predict_proba(X_test)[:, 1]
+
+
+fpr, tpr, thresholds = roc_curve(y_test, y_probability)
+
+
+auc_score = roc_auc_score(y_test, y_probability)
+
+print("AUC Score:", auc_score)
+
+
+plt.figure(figsize=(7, 5))
+
+plt.plot(
+    fpr,
+    tpr,
+    label=f"Logistic Regression (AUC = {auc_score:.2f})"
+)
+
+
+plt.plot(
+    [0, 1],
+    [0, 1],
+    linestyle="--",
+    label="Random Classifier"
+)
+
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+
+plt.title("ROC Curve")
+
+plt.legend()
+
+plt.grid()
+
+plt.show()
