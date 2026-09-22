@@ -1,0 +1,66 @@
+#  Build a Logistic Regression model for a custom student dataset to predict pass/fail based on study hours and attendance.
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+
+
+data = {
+    "StudyHours": [1, 2, 2, 3, 3, 4, 4, 5, 5, 6,
+                   6, 7, 7, 8, 8, 9, 9, 10, 10, 11],
+    
+    "Attendance": [50, 55, 60, 58, 65, 62, 68, 70, 72, 75,
+                   78, 80, 82, 85, 88, 90, 92, 94, 96, 98],
+    
+    "Pass": [0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
+             1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+}
+
+df = pd.DataFrame(data)
+
+print("Student Dataset:")
+print(df)
+
+
+X = df[["StudyHours", "Attendance"]]
+
+
+y = df["Pass"]
+
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42, stratify=y
+)
+model = LogisticRegression()
+
+
+model.fit(X_train, y_train)
+
+
+y_pred = model.predict(X_test)
+
+
+accuracy = accuracy_score(y_test, y_pred)
+
+print("\nAccuracy:", accuracy)
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+
+new_student = [[6, 80]]
+
+prediction = model.predict(new_student)
+probability = model.predict_proba(new_student)
+
+print("\nNew Student:")
+print("Study Hours = 6")
+print("Attendance = 80%")
+
+if prediction[0] == 1:
+    print("Prediction: PASS")
+else:
+    print("Prediction: FAIL")
+
+print("Pass Probability:", probability[0][1])
