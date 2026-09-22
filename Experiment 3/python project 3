@@ -1,0 +1,41 @@
+'''Compare and document the effect of StandardScaler vs MinMaxScaler by printing the trans-
+formed arrays and observing their numerical ranges.'''
+
+import numpy as np
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
+# Original data
+X = np.array([
+    [10],
+    [20],
+    [30],
+    [40],
+    [50]
+])
+
+# StandardScaler
+standard_scaler = StandardScaler()
+X_standard = standard_scaler.fit_transform(X)
+
+# MinMaxScaler
+minmax_scaler = MinMaxScaler()
+X_minmax = minmax_scaler.fit_transform(X)
+
+# Print results
+print("Original Array:")
+print(X)
+
+print("\nStandardScaler Transformed Array:")
+print(X_standard)
+
+print("\nMinMaxScaler Transformed Array:")
+print(X_minmax)
+
+# Print ranges
+print("\nRange after StandardScaler:")
+print("Minimum:", X_standard.min())
+print("Maximum:", X_standard.max())
+
+print("\nRange after MinMaxScaler:")
+print("Minimum:", X_minmax.min())
+print("Maximum:", X_minmax.max())
